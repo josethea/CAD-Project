@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Recortar Rectas</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/3-col-portfolio.css" rel="stylesheet">
+</head>
+
+<body onload="cargarLienzo()">
+
+    <style>
+        section {
+            text-align: center;
+        }
+
+        .pto, #btn {
+            border: 2px solid #C3C3C3;
+            display: inline-block;
+        }
+
+        #myCanvas {
+            transform: scaleY(-1);
+        }
+    </style>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Metodos de graficación</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#">Acerca de </a>
+                    </li>
+    <!--                <li>
+                        <a href="#">Services</a>
+                    </li>
+                    <li>
+                        <a href="#">Contact</a>
+                    </li>-->
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <div class="jumbotron">  
+        <div class="">
+            <div class="" style="margin:40px;display:inline-block;">
+                <canvas width="500" height="500" id="myCanvas" onclick="q()" style="border: 2px solid #000000; background:#FFFFFF; ">Este navegador no soporta canvas.
+                </canvas> 
+            </div>
+            <div class="" style="margin:20px 40px; display:inline-block;">
+                <div class="jumbotron">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                Ingresar punto inicial:
+                                
+                                x1: <input type="number" class="form-control" placeholder="Numero entre 0 a 500" id="numx1"/></br> 
+                                y1: <input type="number" class="form-control" placeholder="Numero entre 0 a 500" id="numy1"/>     
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                Ingresar punto final:
+                                x2: <input type="number" class="form-control" placeholder="Numero entre 0 a 500"  id="numx2"></br>
+                                y2: <input type="number" class="form-control" placeholder="Numero entre 0 a 500" id="numy2" >
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <button class="btn btn-primary" onclick="recortar()" id="metodo_directo">Recortar</button>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <button id="clear" onclick="limpiar()" class="btn btn-warning" >Limpiar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+
+        var band = 0;
+
+        function q(event) 
+        {
+            if (band == 0)
+            {
+                event = event || window.event;
+
+                var canvas = document.getElementById('myCanvas');
+                x = event.pageX - canvas.offsetLeft;
+                y = event.pageY - canvas.offsetTop;
+                y = convert(y);
+
+                document.getElementById("numx1").value = x;
+                document.getElementById("numy1").value = y;
+
+                band = 1;
+            }
+            else
+            {
+                event = event || window.event;
+
+                var canvas = document.getElementById('myCanvas');
+                x = event.pageX - canvas.offsetLeft;
+                y = event.pageY - canvas.offsetTop;
+                y = convert(y);
+
+                document.getElementById("numx2").value = x;
+                document.getElementById("numy2").value = y;
+
+                band = 0;
+                dibujar();
+            }
+        }   
+
+        function convert(y)
+        {
+            y = Number(y);
+            var yprima = 500 - y;
+            return yprima;
+        }
+
+        var xmin;
+        var ymin;
+        var xmax;
+        var ymax;
+
+        function cargarLienzo()
+        {
+            var c = document.getElementById("myCanvas");
+            ctx = c.getContext("2d");
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#000";
+
+            //EJEX1
+
+            ctx.beginPath();
+            ctx.moveTo(350,150);
+            ctx.lineTo(150,150);
+            ctx.stroke();
+            ctx.closePath();
+
+            //EJEY1
+
+            ctx.beginPath();
+            ctx.moveTo(150,150);
+            ctx.lineTo(150,350);
+            ctx.stroke();
+            ctx.closePath();
+
+            //EJEX2
+
+            ctx.beginPath();
+            ctx.moveTo(150,350);
+            ctx.lineTo(350,350);
+            ctx.stroke();
+            ctx.closePath();
+
+            //EJEY2
+
+            ctx.beginPath();
+            ctx.moveTo(350,350);
+            ctx.lineTo(350,150);
+            ctx.stroke();
+            ctx.closePath();
+
+            xmin = 150;
+            ymin = 150;
+            xmax = 350;
+            ymax = 350;
+        }
+
+        function limpiar()
+        {
+            window.location.reload();
+        }
+
+        function limpiarGrafico()
+        {
+            var c= document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            ctx.clearRect(0,0,c.width,c.height);
+            cargarLienzo();
+        }
+
+        function limpiarNumero()
+        {
+
+            document.getElementById("numx1").value = "";
+            document.getElementById("numy1").value = "";
+            document.getElementById("numx2").value = "";
+            document.getElementById("numy2").value = "";
+        }
+
+        var x1;
+        var x2;
+        var y1;
+        var y2;
+
+        function dibujar()
+        {
+            limpiarGrafico();
+            x1 = Number(document.getElementById("numx1").value);
+            y1 = Number(document.getElementById("numy1").value);
+            x2 = Number(document.getElementById("numx2").value);
+            y2 = Number(document.getElementById("numy2").value);
+
+            recta(x1,y1,x2,y2);
+        }
+
+
+        function recta(x1,y1,x2,y2)
+        {
+            var c = document.getElementById("myCanvas");
+            ctx = c.getContext("2d");
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "blue";
+
+            ctx.beginPath();
+            ctx.moveTo(x1,y1);
+            ctx.lineTo(x2,y2);
+            ctx.stroke();
+            ctx.closePath();
+        }   
+
+        function ubicar(a,b)
+        {
+            var cadena;
+            if (a<=xmin && b<=ymin)
+            {
+                cadena = "IZ";
+            }
+            else if (a>=xmin && a<=xmax && b<=ymin)
+            {
+                cadena = "I";
+            }
+            else if (a>=xmax && b<=ymin)
+            {
+                cadena = "ID";
+            }
+            else if (a>=xmax && b>=ymin && b<=ymax)
+            {
+                cadena = "D";
+            }
+            else if (a<=xmin && b>=ymin && b<=ymax)
+            {
+                cadena = "Z";
+            }
+            else if (a<=xmin && b>=ymax)
+            {
+                cadena = "SZ";
+            }
+            else if (a>=xmin && a<=xmax && b>=ymax)
+            {
+                cadena = "S";
+            }
+            else if (a>=xmax && b>=ymax)// a>=xmax && b>=ymax
+            {
+                cadena = "SD";
+            }
+            else
+            {
+                cadena = "C";
+            }
+            return cadena;
+        }
+
+        var ubicacion_a = "";
+        var ubicacion_b = "";
+        var interseccion;
+
+        function intersecar(ubi_a,ubi_b)
+        {
+            var igual = 0;
+            for (var i=0; i<ubi_a.length; i++)
+            {
+                var dato_a = ubi_a.charAt(i);
+                for (var j=0; j<ubi_b.length; j++)
+                {
+                    var dato_b = ubi_b.charAt(j);
+                    if (dato_a == dato_b)
+                    {
+                        igual = 1;
+                        j = ubi_b.length;
+                        i = ubi_a.length;
+                    }
+                }
+            }
+            if (igual == 1)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        var bandera = 0;
+
+        function recortar()
+        {
+            
+            if (x1>=xmin && x1<=xmax && y1>=ymin && y1<=ymax && x2>=xmin && x2<=xmax && y2>=ymin && y2<=ymax)
+            {
+                limpiarGrafico();
+                recta(x1,y1,x2,y2);
+                bandera = 1;
+            }
+            else
+            {
+                ubicacion_a = ubicar(x1,y1);
+                ubicacion_b = ubicar(x2,y2);
+                interseccion = intersecar(ubicacion_a,ubicacion_b);
+            }
+            if (interseccion == 1)
+            {
+                limpiarGrafico();
+            }
+            else //interseccion = 0 .. significa que hay que recortar.
+            {
+                
+                if (bandera == 0)
+                {
+                    limpiarGrafico();
+
+                    var nuevo_x1;
+                    var nuevo_y1;
+                    var nuevo_x2;
+                    var nuevo_y2;
+
+                    var m = (y2-y1) / (x2-x1);
+                    switch (ubicacion_a)
+                    {
+                        case "IZ":
+                            nuevo_x1 = xmin;
+                            nuevo_y1 = m * (nuevo_x1 - x1) + y1;
+                            if (nuevo_y1 < ymin)
+                            {
+                                nuevo_y1 = ymin;
+                                nuevo_x1 = (1/m) * (nuevo_y1 - y1) + x1;
+                            }
+                            break;
+                        case "I":
+                            nuevo_y1 = ymin;
+                            nuevo_x1 = (1/m) * (nuevo_y1 - y1) + x1;
+                            break;
+                        case "ID":
+                            nuevo_x1 = xmax;
+                            nuevo_y1 = m * (nuevo_x1 - x1) + y1;
+                            if (nuevo_y1 < ymin)
+                            {
+                                nuevo_y1 = ymin;
+                                nuevo_x1 = (1/m) * (nuevo_y1 - y1) + x1;
+                            }
+                            break;
+                        case "D":
+                            nuevo_x1 = xmax;
+                            nuevo_y1 = m * (nuevo_x1 - x1) + y1;
+                            break;
+                        case "Z":
+                            nuevo_x1 = xmin;
+                            nuevo_y1 = m * (nuevo_x1 - x1) + y1;
+                            break;
+                        case "SZ":
+                            nuevo_x1 = xmin;
+                            nuevo_y1 = m * (nuevo_x1 - x1) + y1;
+                            if (nuevo_y1 > ymax)
+                            {
+                                nuevo_y1 = ymax;
+                                nuevo_x1 = (1/m) * (nuevo_y1 - y1) + x1;
+                            }
+                            break;
+                        case "S":
+                            nuevo_y1 = ymax;
+                            nuevo_x1 = (1/m) * (nuevo_y1 - y1) + x1;
+                            break;
+                        case "SD":
+                            nuevo_x1 = xmax;
+                            nuevo_y1 = m * (nuevo_x1 - x1) + y1;
+                            if (nuevo_y1 > ymax)
+                            {
+                                nuevo_y1 = ymax;
+                                nuevo_x1 = (1/m) * (nuevo_y1 - y1) + x1;
+                            }
+                            break;
+                        case "C":
+                            nuevo_x1 = x1;
+                            nuevo_y1 = y1;
+                            break;
+                    }
+                    switch (ubicacion_b)
+                    {
+                        case "IZ":
+                            nuevo_x2 = xmin;
+                            nuevo_y2 = m * (nuevo_x2 - x2) + y2;
+                            if (nuevo_y2 < ymin)
+                            {
+                                nuevo_y2 = ymin;
+                                nuevo_x2 = (1/m) * (nuevo_y2 - y2) + x2;
+                            }
+                            break;
+                        case "I":
+                            nuevo_y2 = ymin;
+                            nuevo_x2 = (1/m) * (nuevo_y2 - y2) + x2;
+                            break;
+                        case "ID":
+                            nuevo_x2 = xmax;
+                            nuevo_y2 = m * (nuevo_x2 - x2) + y2;
+                            if (nuevo_y2 < ymin)
+                            {
+                                nuevo_y2 = ymin;
+                                nuevo_x2 = (1/m) * (nuevo_y2 - y2) + x2;
+                            }
+                            break;
+                        case "D":
+                            nuevo_x2 = xmax;
+                            nuevo_y2 = m * (nuevo_x2 - x2) + y2;
+                            break;
+                        case "Z":
+                            nuevo_x2 = xmin;
+                            nuevo_y2 = m * (nuevo_x2 - x2) + y2;
+                            break;
+                        case "SZ":
+                            nuevo_x2 = xmin;
+                            nuevo_y2 = m * (nuevo_x2 - x2) + y2;
+                            if (nuevo_y2 > ymax)
+                            {
+                                nuevo_y2 = ymax;
+                                nuevo_x2 = (1/m) * (nuevo_y2 - y2) + x2;
+                            }
+                            break;
+                        case "S":
+                            nuevo_y2 = ymax;
+                            nuevo_x2 = (1/m) * (nuevo_y2 - y2) + x2;
+                            break;
+                        case "SD":
+                            nuevo_x2 = xmax;
+                            nuevo_y2 = m * (nuevo_x2 - x2) + y2;
+                            if (nuevo_y2 > ymax)
+                            {
+                                nuevo_y2 = ymax;
+                                nuevo_x2 = (1/m) * (nuevo_y2 - y2) + x2;
+                            }
+                            break;
+                        case "C":
+                            nuevo_x2 = x2;
+                            nuevo_y2 = y2;
+                            break;
+                    }
+                    if ((nuevo_x1<xmin && nuevo_y1==ymin && nuevo_x2==xmin && nuevo_y2<ymin) || (nuevo_x2<xmin && nuevo_y2==ymin && nuevo_x1==xmin && nuevo_y1<ymin) || (nuevo_x1==xmax && nuevo_y1<ymin && nuevo_x2>xmax && nuevo_y2==ymin) || (nuevo_x2==xmax && nuevo_y2<ymin && nuevo_x1>xmax && nuevo_y1==ymin) || (nuevo_x1==xmax && nuevo_y1>ymax && nuevo_x2>xmax && nuevo_y2==ymax) || (nuevo_x2==xmax && nuevo_y2>ymax && nuevo_x1>xmax && nuevo_y1==ymax) || (nuevo_x1<xmin && nuevo_y1==ymax && nuevo_x2==xmin && nuevo_y2>ymax) || (nuevo_x1<xmin && nuevo_y1==ymax && nuevo_x2==xmin && nuevo_y2>ymax))
+                    {
+                        limpiarGrafico();
+                    }
+                    else
+                    {
+                        recta(nuevo_x1,nuevo_y1,nuevo_x2,nuevo_y2);
+                    }
+                }
+            }
+        } 
+
+    </script>
+</body>
+</html>

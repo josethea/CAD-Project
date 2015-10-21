@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Recorte de poligonos</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/3-col-portfolio.css" rel="stylesheet">
+</head>
+
+<body onload="cargarLienzo()" style="margin-top:60px;">
+
+    <style>
+        section {
+            text-align: center;
+        }
+
+        .pto, #btn {
+            border: 2px solid #C3C3C3;
+            display: inline-block;
+        }
+
+        #myCanvas {
+            transform: scaleY(-1);
+        }
+    </style>
+    
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Metodos de graficación</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#">Acerca de </a>
+                    </li>
+    <!--                <li>
+                        <a href="#">Services</a>
+                    </li>
+                    <li>
+                        <a href="#">Contact</a>
+                    </li>-->
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+    <div class="jumbotron" style="padding:0px;">  
+        <div class="" style="margin :0px 400px;">
+            <div class="" style="margin:40px;display:inline-block;">
+                <canvas width="500" height="500" id="myCanvas" onclick="q()" style="border: 2px solid #000000; background:#FFFFFF; ">Este navegador no soporta canvas.
+                </canvas> 
+            </div>
+            <div class="text-center" style="">
+                <div class="row" style="margin-left:40px;margin-right:40px;">
+                    <div class="col-lg-4">
+                        <button class="btn btn-primary" onclick="dibujar()" id="">Dibujar</button>
+                    </div>
+                    <div class="col-lg-4">
+                        <button  onclick="recortar()" class="btn btn-warning" >Recortar</button>
+                    </div>
+                    <div class="col-lg-4" style="">
+                        <button id="clear" onclick="limpiar()" class="btn btn-default" >Limpiar</button>
+                    </div>
+               </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+
+        var vector = new Array();
+        var var_dibujar = 0;
+        var i = 0;
+
+        function q(event)
+        {
+            if (var_dibujar == 0)
+            {
+                event = event || window.event;
+
+                var canvas = document.getElementById('myCanvas');
+                x = event.pageX - canvas.offsetLeft;
+                y = event.pageY - canvas.offsetTop;
+                y = convert(y);
+
+                graficarPunto(x,y);
+
+                vector[i+1] = x;
+                vector[i+2] = y;
+
+                i = i + 2;
+            }
+            else
+            {   
+                alert("Para volver a dibujar, presione en el botón Limpiar");
+            }
+        }
+
+        function dibujar()
+        {
+            var c = document.getElementById("myCanvas");
+            ctx = c.getContext("2d");
+
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "blue";
+            ctx.fillStyle = "#D0D0D0";
+            for (var j=2; j<=vector.length; j=j+2)
+            {
+                if (j==2)
+                {
+                    ctx.moveTo(vector[j-1],vector[j]);
+                }
+                else
+                {
+                    ctx.lineTo(vector[j-1],vector[j]);
+                }
+            }
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+
+            cargarLienzo();
+
+            var_dibujar = 1;
+        }
+
+        function convert(y)
+        {
+            y = Number(y);
+            var yprima = 500 - y;
+            return yprima;
+        }
+
+        var xmin;
+        var ymin;
+        var xmax;
+        var ymax;
+
+        function cargarLienzo()
+        {
+            var c = document.getElementById("myCanvas");
+            ctxlienzo = c.getContext("2d");
+            ctxlienzo.lineWidth = 1;
+            ctxlienzo.strokeStyle = "#000";
+            ctxlienzo.fillStyle = "#D0D0D0";
+
+            //EJEX1
+
+            ctxlienzo.beginPath();
+            ctxlienzo.moveTo(350,150);
+            ctxlienzo.lineTo(150,150);
+            ctxlienzo.lineTo(150,350);
+            ctxlienzo.lineTo(350,350);
+            ctxlienzo.closePath();
+            ctxlienzo.stroke();
+
+
+            xmin = 150;
+            ymin = 150;
+            xmax = 350;
+            ymax = 350;
+        }
+
+        function limpiar()
+        {
+            window.location.reload();
+        }
+
+        function limpiarGrafico()
+        {
+            var c= document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            ctx.clearRect(0,0,c.width,c.height);
+            cargarLienzo();
+        }  
+
+        var vector_recorte1 = new Array();
+        var vector_recorte2 = new Array();
+        var vector_recorte3 = new Array();
+        var vector_recorte4 = new Array();
+
+        function recortar1() // en xmin
+        {
+            
+            var i = 0;
+
+            limpiarGrafico();
+
+            for (var j=2; j<=vector.length; j=j+2)
+            {
+                
+                var num_ax;
+                var num_ay;
+                var num_bx;
+                var num_by;
+
+                if (j==vector.length-1)
+                {
+                    num_ax = vector[j-1];
+                    num_ay = vector[j];
+                    num_bx = vector[1];
+                    num_by = vector[2];
+
+                    if (num_ax >= xmin && num_bx >= xmin)
+                    {
+                        vector_recorte1[i+1] = num_bx;
+                        vector_recorte1[i+2] = num_by;
+                        i = i + 2;
+                    }
+
+                    else if (num_ax >= xmin && num_bx < xmin)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_x = xmin;
+                        var nuevo_y = m * (nuevo_x - num_ax) + num_ay;
+                        vector_recorte1[i+1] = nuevo_x;
+                        vector_recorte1[i+2] = nuevo_y;
+                        i = i + 2;
+                    }
+
+                    else if (num_ax < xmin && num_bx >=xmin)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_x = xmin;
+                        var nuevo_y = m * (nuevo_x - num_ax) + num_ay;
+                        vector_recorte1[i+1] = nuevo_x;
+                        vector_recorte1[i+2] = nuevo_y;
+                        vector_recorte1[i+3] = num_bx;
+                        vector_recorte1[i+4] = num_by;
+                        i = i + 4;
+                    }
+                }
+
+                else
+                {
+                    num_ax = vector[j-1];
+                    num_ay = vector[j];
+                    num_bx = vector[j+1];
+                    num_by = vector[j+2];
+
+                    if (num_ax >= xmin && num_bx >= xmin)
+                    {
+                        vector_recorte1[i+1] = num_bx;
+                        vector_recorte1[i+2] = num_by;
+                        i = i + 2;
+                    }
+
+                    else if (num_ax >= xmin && num_bx < xmin)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_x = xmin;
+                        var nuevo_y = m * (nuevo_x - num_ax) + num_ay;
+                        vector_recorte1[i+1] = nuevo_x;
+                        vector_recorte1[i+2] = nuevo_y;
+                        i = i + 2;
+                    }
+
+                    else if (num_ax < xmin && num_bx >=xmin)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_x = xmin;
+                        var nuevo_y = m * (nuevo_x - num_ax) + num_ay;
+                        vector_recorte1[i+1] = nuevo_x;
+                        vector_recorte1[i+2] = nuevo_y;
+                        vector_recorte1[i+3] = num_bx;
+                        vector_recorte1[i+4] = num_by;
+                        i = i + 4;
+                    }
+                }
+            }
+
+        }
+
+        function recortar2() // en ymax
+        {
+            
+            var i = 0;
+
+            limpiarGrafico();
+
+            for (var j=2; j<=vector_recorte1.length; j=j+2)
+            {
+                
+                var num_ax;
+                var num_ay;
+                var num_bx;
+                var num_by;
+
+                if (j==vector_recorte1.length-1)
+                {
+                    num_ax = vector_recorte1[j-1];
+                    num_ay = vector_recorte1[j];
+                    num_bx = vector_recorte1[1];
+                    num_by = vector_recorte1[2];
+
+                    if (num_ay <= ymax && num_by <= ymax)
+                    {
+                        vector_recorte2[i+1] = num_bx;
+                        vector_recorte2[i+2] = num_by;
+                        i = i + 2;
+                    }
+
+                    else if (num_ay <= ymax && num_by > ymax)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_y = ymax;
+                        var nuevo_x = (1/m) * (nuevo_y - num_ay) + num_ax;
+                        vector_recorte2[i+1] = nuevo_x;
+                        vector_recorte2[i+2] = nuevo_y;
+                        i = i + 2;
+                    }
+
+                    else if (num_ay > ymax && num_by <=ymax)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_y = ymax;
+                        var nuevo_x = (1/m) * (nuevo_y - num_ay) + num_ax;
+                        vector_recorte2[i+1] = nuevo_x;
+                        vector_recorte2[i+2] = nuevo_y;
+                        vector_recorte2[i+3] = num_bx;
+                        vector_recorte2[i+4] = num_by;
+                        i = i + 4;
+                    }
+                }
+
+                else
+                {
+                    num_ax = vector_recorte1[j-1];
+                    num_ay = vector_recorte1[j];
+                    num_bx = vector_recorte1[j+1];
+                    num_by = vector_recorte1[j+2];
+
+                    if (num_ay <= ymax && num_by <= ymax)
+                    {
+                        vector_recorte2[i+1] = num_bx;
+                        vector_recorte2[i+2] = num_by;
+                        i = i + 2;
+                    }
+
+                    else if (num_ay <= ymax && num_by > ymax)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_y = ymax;
+                        var nuevo_x = (1/m) * (nuevo_y - num_ay) + num_ax;
+                        vector_recorte2[i+1] = nuevo_x;
+                        vector_recorte2[i+2] = nuevo_y;
+                        i = i + 2;
+                    }
+
+                    else if (num_ay > ymax && num_by <=ymax)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_y = ymax;
+                        var nuevo_x = (1/m) * (nuevo_y - num_ay) + num_ax;
+                        vector_recorte2[i+1] = nuevo_x;
+                        vector_recorte2[i+2] = nuevo_y;
+                        vector_recorte2[i+3] = num_bx;
+                        vector_recorte2[i+4] = num_by;
+                        i = i + 4;
+                    }
+                }
+
+            }
+
+        }
+
+        function recortar3() // en xmax
+        {
+            
+            var i = 0;
+
+            limpiarGrafico();
+
+            for (var j=2; j<=vector_recorte2.length; j=j+2)
+            {
+                
+                var num_ax;
+                var num_ay;
+                var num_bx;
+                var num_by;
+
+                if (j==vector_recorte2.length-1)
+                {
+                    num_ax = vector_recorte2[j-1];
+                    num_ay = vector_recorte2[j];
+                    num_bx = vector_recorte2[1];
+                    num_by = vector_recorte2[2];
+
+                    if (num_ax <= xmax && num_bx <= xmax)
+                    {
+                        vector_recorte3[i+1] = num_bx;
+                        vector_recorte3[i+2] = num_by;
+                        i = i + 2;
+                    }
+
+                    else if (num_ax <= xmax && num_bx > xmax)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_x = xmax;
+                        var nuevo_y = m * (nuevo_x - num_ax) + num_ay;
+                        vector_recorte3[i+1] = nuevo_x;
+                        vector_recorte3[i+2] = nuevo_y;
+                        i = i + 2;
+                    }
+
+                    else if (num_ax > xmax && num_bx <=xmax)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_x = xmax;
+                        var nuevo_y = m * (nuevo_x - num_ax) + num_ay;
+                        vector_recorte3[i+1] = nuevo_x;
+                        vector_recorte3[i+2] = nuevo_y;
+                        vector_recorte3[i+3] = num_bx;
+                        vector_recorte3[i+4] = num_by;
+                        i = i + 4;
+                    }
+                }
+
+                else
+                {
+                    num_ax = vector_recorte2[j-1];
+                    num_ay = vector_recorte2[j];
+                    num_bx = vector_recorte2[j+1];
+                    num_by = vector_recorte2[j+2];
+
+                    if (num_ax <= xmax && num_bx <= xmax)
+                    {
+                        vector_recorte3[i+1] = num_bx;
+                        vector_recorte3[i+2] = num_by;
+                        i = i + 2;
+                    }
+
+                    else if (num_ax <= xmax && num_bx > xmax)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_x = xmax;
+                        var nuevo_y = m * (nuevo_x - num_ax) + num_ay;
+                        vector_recorte3[i+1] = nuevo_x;
+                        vector_recorte3[i+2] = nuevo_y;
+                        i = i + 2;
+                    }
+
+                    else if (num_ax > xmax && num_bx <=xmax)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_x = xmax;
+                        var nuevo_y = m * (nuevo_x - num_ax) + num_ay;
+                        vector_recorte3[i+1] = nuevo_x;
+                        vector_recorte3[i+2] = nuevo_y;
+                        vector_recorte3[i+3] = num_bx;
+                        vector_recorte3[i+4] = num_by;
+                        i = i + 4;
+                    }
+                }
+            }
+
+        }
+
+        function recortar4() // en ymin
+        {
+            
+            var i = 0;
+
+            limpiarGrafico();
+
+            for (var j=2; j<=vector_recorte3.length; j=j+2)
+            {
+                
+                var num_ax;
+                var num_ay;
+                var num_bx;
+                var num_by;
+
+                if (j==vector_recorte3.length-1)
+                {
+                    num_ax = vector_recorte3[j-1];
+                    num_ay = vector_recorte3[j];
+                    num_bx = vector_recorte3[1];
+                    num_by = vector_recorte3[2];
+
+                    if (num_ay >= ymin && num_by >= ymin)
+                    {
+                        vector_recorte4[i+1] = num_bx;
+                        vector_recorte4[i+2] = num_by;
+                        i = i + 2;
+                    }
+
+                    else if (num_ay >= ymin && num_by < ymin)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_y = ymin;
+                        var nuevo_x = (1/m) * (nuevo_y - num_ay) + num_ax;
+                        vector_recorte4[i+1] = nuevo_x;
+                        vector_recorte4[i+2] = nuevo_y;
+                        i = i + 2;
+                    }
+
+                    else if (num_ay < ymin && num_by >= ymin)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_y = ymin;
+                        var nuevo_x = (1/m) * (nuevo_y - num_ay) + num_ax;
+                        vector_recorte4[i+1] = nuevo_x;
+                        vector_recorte4[i+2] = nuevo_y;
+                        vector_recorte4[i+3] = num_bx;
+                        vector_recorte4[i+4] = num_by;
+                        i = i + 4;
+                    }
+                }
+
+                else
+                {
+                    num_ax = vector_recorte3[j-1];
+                    num_ay = vector_recorte3[j];
+                    num_bx = vector_recorte3[j+1];
+                    num_by = vector_recorte3[j+2];
+
+                    if (num_ay >= ymin && num_by >= ymin)
+                    {
+                        vector_recorte4[i+1] = num_bx;
+                        vector_recorte4[i+2] = num_by;
+                        i = i + 2;
+                    }
+
+                    else if (num_ay >= ymin && num_by < ymin)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_y = ymin;
+                        var nuevo_x = (1/m) * (nuevo_y - num_ay) + num_ax;
+                        vector_recorte4[i+1] = nuevo_x;
+                        vector_recorte4[i+2] = nuevo_y;
+                        i = i + 2;
+                    }
+
+                    else if (num_ay < ymin && num_by >= ymin)
+                    {
+                        var m = (num_by-num_ay) / (num_bx-num_ax);
+                        var nuevo_y = ymin;
+                        var nuevo_x = (1/m) * (nuevo_y - num_ay) + num_ax;
+                        vector_recorte4[i+1] = nuevo_x;
+                        vector_recorte4[i+2] = nuevo_y;
+                        vector_recorte4[i+3] = num_bx;
+                        vector_recorte4[i+4] = num_by;
+                        i = i + 4;
+                    }
+                }
+
+            }
+
+            var c = document.getElementById("myCanvas");
+            ctx = c.getContext("2d");
+
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "blue";
+            ctx.fillStyle = "#D0D0D0";
+            for (var j=2; j<=vector_recorte4.length; j=j+2)
+            {
+                if (j==2)
+                {
+                    ctx.moveTo(vector_recorte4[j-1],vector_recorte4[j]);
+                }
+                else
+                {
+                    ctx.lineTo(vector_recorte4[j-1],vector_recorte4[j]);
+                }
+            }
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+
+            cargarLienzo();
+        }
+
+        function recortar()
+        {
+            recortar1();
+            recortar2();
+            recortar3();
+            recortar4();
+        }
+
+        function graficarPunto(x,y)
+        {
+            var c=document.getElementById("myCanvas");
+            var ctx=c.getContext("2d");
+            ctx.beginPath();
+            ctx.strokeStyle = "blue";
+            ctx.arc(x,y,3,0,2*Math.PI);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+        }
+
+    </script>
+</body>
+</html>

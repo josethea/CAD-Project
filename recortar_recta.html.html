@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Recortar Rectas</title>
+</head>
+
+<body onload="cargarLienzo()">
+    <style>
+        section {
+            text-align: center;
+        }
+
+        .pto, #btn {
+            border: 2px solid #C3C3C3;
+            display: inline-block;
+        }
+
+        #myCanvas {
+            transform: scaleY(-1);
+        }
+    </style>            
+    
+    <section>
+
+        <canvas id="myCanvas" width="500" height="500" style="border: 2px solid #C3C3C3">Este navegador no soporta canvas.</canvas></br></br>
+
+        <div class="pto">
+            Ingresar punto A:</br>
+            x1: <input type="number" placeholder="Numero 0-500" id="numx1"/></br> 
+            y1: <input type="number" placeholder="Numero 0-500" id="numy1"/>     
+        </div>
+
+        <div class="pto">
+            Ingresar punto B:</br>
+            x2: <input type="number" placeholder="Numero 0-500" id="numx2"></br>
+            y2: <input type="number" placeholder="Numero 0-500" id="numy2"/>
+        </div>
+
+        <div id="btn">  
+            Botones:</br>
+            <button onclick="dibujar()">Dibujar</button></br>
+            <button onclick="recortar()">Recortar</button></br>
+            <button onclick="limpiar()">Limpiar</button>
+        </div>
+
+    </section>
+
+    <script>
+
+        
+
+    </script>
+</body>
+</html>

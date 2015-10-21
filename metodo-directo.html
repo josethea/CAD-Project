@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Metodo directo</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery.js" ></script>
+    <script src="js/metodos.js" ></script>
+    <style>
+        section {
+            text-align: center;
+        }
+
+        .pto, #btn {
+            border: 2px solid #C3C3C3;
+            display: inline-block;
+        }
+
+        #myCanvas {
+            transform: scaleY(-1);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">CAD</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#">Acerca de ..</a>
+                    </li>
+                    
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <div class="jumbotron">  
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="col-lg-12 jumbotron">
+                            <canvas  width="500" height="500" id="myCanvas"  style="border: 2px solid #000000; background:#FFFFFF; ">Este navegador no soporta canvas.
+                            </canvas> 
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" >
+                    <div class="jumbotron">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    Ingresar punto inicial:
+                                    
+                                    x1: <input type="number" class="form-control" placeholder="Numero entre 0 a 500" id="numx1"/></br> 
+                                    y1: <input type="number" class="form-control" placeholder="Numero entre 0 a 500" id="numy1"/>     
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    Ingresar punto final:
+                                    x2: <input type="number" class="form-control" placeholder="Numero entre 0 a 500"  id="numx2"></br>
+                                    y2: <input type="number" class="form-control" placeholder="Numero entre 0 a 500" id="numy2" >
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <button class="btn btn-primary" id="metodo_directo">Dibujar</button>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <button id="clear" class="btn btn-warning" >Limpiar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function sumar(k)
+        {
+            return (k);
+        }
+
+        function cargarLienzo()
+        {
+            var c = document.getElementById("myCanvas");
+            ctx = c.getContext("2d");
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#000";
+        }
+
+        function limpiar()
+        {
+            document.getElementById("numx1").value="";
+            document.getElementById("numy1").value="";
+            document.getElementById("numx2").value="";
+            document.getElementById("numy2").value="";
+
+            var c= document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            ctx.clearRect(0,0,c.width,c.height);
+            cargarLienzo();
+        }
+
+        function metodo_directo(x1,y1,x2,y2)
+        {
+           
+
+            x1 = Number(x1);
+            y1 = Number(y1);
+            x2 = Number(x2);
+            y2 = Number(y2); 
+
+            if (x1>=-250 && x1<=250 && y1>=-250 && y1<=250 && x2>=-250 && x2<=250 && y2>=-250 && y2<=250)
+            {
+                var m = (y2-y1)/(x2-x1);
+                var b = (y1) - m*(x1);
+                
+                var i = 0; 
+
+                if (x1<x2)
+                {
+                    while (x1+i<=x2)
+                    {  
+                        var y = m * (x1+i) + b;
+                        y = Math.round(y);
+                        var canvas = document.getElementById("myCanvas");
+                        var ctx = canvas.getContext("2d");
+                        ctx.fillStyle = "red";
+                        x = sumar(x1+i);
+                        y = sumar(y);
+                        ctx.fillRect(x,y,1,1);
+                        i=i+1;   
+                    } 
+                } 
+                else
+                {
+                    while (x1-i>=x2)
+                    {
+                        var y = m * (x1-i) + b;
+                        y = Math.round(y);
+                        var canvas = document.getElementById("myCanvas");
+                        var ctx = canvas.getContext("2d");
+                        ctx.fillStyle = "red";
+                        x = sumar(x1-i);
+                        y = sumar(y);
+                        ctx.fillRect(x,y,1,1);
+                        i++;
+                    }
+                }
+            }
+            else
+            {
+                window.alert("Revise los valores ingresados, alguno no es válido.");
+                document.getElementById("numx1").value = "";
+                document.getElementById("numy1").value = "";
+                document.getElementById("numx2").value = "";
+                document.getElementById("numy2").value = "";
+            }
+        }      
+    </script>
+</body>
+</html>
