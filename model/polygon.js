@@ -105,6 +105,23 @@ Polygon.prototype.scale = function(E){
 	this.draw();
 }
 
+Polygon.prototype.edging = function(AF){
+
+	if(AF.x)
+	{
+		for (var i = 0; i < this.points.length; i++) {
+			this.points[i].x = this.points[i].x + AF.x*this.points[i].y;
+		}
+	}
+	if(AF.y) {
+		for (var i = 0; i < this.points.length; i++) {
+			this.points[i].y = this.points[i].y + AF.y*this.points[i].x;
+		}
+	}
+
+	this.draw();
+}
+
 Polygon.prototype.draw = function() {
 
 	var points = this.points;
